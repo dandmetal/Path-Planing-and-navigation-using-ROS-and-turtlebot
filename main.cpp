@@ -4,7 +4,7 @@
 
 
 int main(int argc, char** argv){
-	const float Kv=0.6;
+	const float Kv=0.5;
 	const float Kh=1;
 	const float L = 0.16;
 	float xf=2;
