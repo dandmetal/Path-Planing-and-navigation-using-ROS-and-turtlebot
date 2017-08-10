@@ -7,6 +7,7 @@ int main(int argc, char** argv){
 	const float Kv=0.5;
 	const float Kh=1;
 	const float L = 0.16;
+	const float e=0.05;
 	float xf=2;
 	float yf=2;
 	float speed,turn,angle;
@@ -32,16 +33,20 @@ int main(int argc, char** argv){
 	
 	ros::Rate loop_rate(10);
 	while(n.ok()){
-		while ((bob.distance_to(xf,yf) < disToPoint) && (xf !=fim.pose.position.x  && yf !=fim.pose.position.y)){
-			plan.next_point(xf,yf);		
-			cout << "X Objetivo: " << xf << " Y Objetivo: " << yf << endl;
-		}
+		if (bob.distance_to(fim.pose.position.x,fim.pose.position.y) > e){
+			while ((bob.distance_to(xf,yf) < disToPoint) && (xf !=fim.pose.position.x  && yf !=fim.pose.position.y)){
+				plan.next_point(xf,yf);		
+				cout << "X Objetivo: " << xf << " Y Objetivo: " << yf << endl;
+			}
 
-		speed=Kv*bob.distance_to(xf,yf);
-		angle=atan((yf - bob.get_y())/(xf - bob.get_x()));
-		turn=(speed/L)*tan(Kh*DiffBot::angdif(angle,bob.get_o()));
+			speed=Kv*bob.distance_to(xf,yf);
+			angle=atan((yf - bob.get_y())/(xf - bob.get_x()));
+			turn=(speed/L)*tan(Kh*DiffBot::angdif(angle,bob.get_o()));
 
-		bob.set_speed(speed,turn);
+			bob.set_speed(speed,turn);
+		}else
+			bob.set_speed(0,0);
+
 		bob.publish();	
 		cout << "X: " << bob.get_x() << " Y: " << bob.get_y() << " Angulo: "<< bob.get_o() <<endl;
 		ros::spinOnce();
